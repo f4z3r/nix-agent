@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) types mkDefault mkEnableOption mkOption mkIf optional strings;
+  inherit (lib) types mkEnableOption mkOption mkIf optional strings;
   cfg = config.services.kolide-launcher;
   pkg = cfg.package;
 in
@@ -43,31 +43,6 @@ in
       default = "/etc/kolide-k2";
       description = ''
         The path to the directory where the enrollment secret lives.
-      '';
-    };
-
-    updateChannel = mkOption {
-      type = types.str;
-      default = "stable";
-      description = ''
-        Which release channel the launcher installation should use when autoupdating
-        itself and its osquery installation: one of stable, nightly, beta, or alpha.
-      '';
-    };
-
-    autoupdateInterval = mkOption {
-      type = types.str;
-      default = "1h";
-      description = ''
-        The interval to check for launcher and osqueryd updates.
-      '';
-    };
-
-    autoupdaterInitialDelay = mkOption {
-      type = types.str;
-      default = "1h";
-      description = ''
-        Initial autoupdater subprocess delay.
       '';
     };
 
@@ -126,11 +101,7 @@ in
             "--root_directory ${cfg.rootDirectory}"
             "--osqueryd_path ${pkg}/bin/osqueryd"
             "--enroll_secret_path ${cfg.enrollSecretDirectory}/secret"
-            "--update_channel ${cfg.updateChannel}"
             "--transport jsonrpc"
-            "--autoupdate"
-            "--autoupdate_interval ${cfg.autoupdateInterval}"
-            "--autoupdater_initial_delay ${cfg.autoupdaterInitialDelay}"
           ]
           ++ optional cfg.insecureTransport "--insecure_transport"
           ++ optional cfg.insecureTLS "--insecure"
